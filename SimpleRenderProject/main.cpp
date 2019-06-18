@@ -1,10 +1,38 @@
+using namespace std;
 /*  Trim fat from windows*/
 //#define WIN32_LEAN_AND_MEAN
 #pragma comment(linker, "/subsystem:windows")
 /*  Pre-processor directives*/
 
 #include <windows.h>
+#include <iostream>
 /*  Windows Procedure Event Handler*/
+
+
+
+void TestPaint(HDC hDC)
+{
+
+    int TwoDValues[5][2];
+    int a;
+
+    for ( a = 0; a < 5; a++) {
+        TwoDValues[a][0] = 10*a;
+        TwoDValues[a][1] = 50-a*a;
+    }
+
+    MoveToEx(hDC, TwoDValues[0][0], TwoDValues[0][1], NULL);
+    for ( a = 1; a < 5; a++) {
+        LineTo(hDC, TwoDValues[a][0], TwoDValues[a][1]);
+        cout << TwoDValues[a][0];
+        cout << endl;
+        cout << TwoDValues[a][1];
+        cout << endl;
+        cout << endl;
+    }
+}
+
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     PAINTSTRUCT paintStruct;
@@ -31,6 +59,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             SetTextColor(hDC, COLORREF(0x00FF0000));
             /*  Display text in middle of window*/
             TextOut(hDC,150,150,string,sizeof(string)-1);
+            TestPaint(hDC);
             EndPaint(hwnd, &paintStruct);
             return 0;
             break;
@@ -39,12 +68,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     return (DefWindowProc(hwnd,message,wParam,lParam));
 }
+
+
+
+
+
+
 /*  Main function*/
 int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      LPSTR     lpCmdLine,
                      int       nCmdShow)
 {
+
+
+
+
     WNDCLASSEX  windowClass;        //window class
     HWND        hwnd;               //window handle
     MSG         msg;                //message
