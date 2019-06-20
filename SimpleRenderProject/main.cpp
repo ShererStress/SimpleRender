@@ -15,17 +15,26 @@ void TestPaint(HDC hDC)
 
     const int numPoints = 4;
 
+    struct drawPoint {
+        int xValue;
+        int yValue;
+    } allPoints[numPoints];
+
     int xValues[numPoints] = {100, 300, 300, 100};
     int yValues[numPoints] = {100, 100, 300, 300};
 
     int i;
+    for ( i = 0; i < numPoints; i++) {
+        allPoints[i].xValue = xValues[i];
+        allPoints[i].yValue = yValues[i];
+    }
 
-    MoveToEx(hDC, xValues[0], yValues[0], NULL);
+    MoveToEx(hDC, allPoints[0].xValue, allPoints[0].yValue, NULL);
     for ( i = 1; i < numPoints; i++) {
-        LineTo(hDC, xValues[i], yValues[i]);
-        cout << xValues[i];
+        LineTo(hDC, allPoints[i].xValue, allPoints[i].yValue);
+        cout << allPoints[i].xValue;
         cout << endl;
-        cout << yValues[i];
+        cout << allPoints[i].yValue;
         cout << endl;
         cout << endl;
     }
