@@ -13,23 +13,24 @@ using namespace std;
 void TestPaint(HDC hDC)
 {
 
-    int TwoDValues[5][2];
-    int a;
+    const int numPoints = 4;
 
-    for ( a = 0; a < 5; a++) {
-        TwoDValues[a][0] = 10*a;
-        TwoDValues[a][1] = 50-a*a;
-    }
+    int xValues[numPoints] = {100, 300, 300, 100};
+    int yValues[numPoints] = {100, 100, 300, 300};
 
-    MoveToEx(hDC, TwoDValues[0][0], TwoDValues[0][1], NULL);
-    for ( a = 1; a < 5; a++) {
-        LineTo(hDC, TwoDValues[a][0], TwoDValues[a][1]);
-        cout << TwoDValues[a][0];
+    int i;
+
+    MoveToEx(hDC, xValues[0], yValues[0], NULL);
+    for ( i = 1; i < numPoints; i++) {
+        LineTo(hDC, xValues[i], yValues[i]);
+        cout << xValues[i];
         cout << endl;
-        cout << TwoDValues[a][1];
+        cout << yValues[i];
         cout << endl;
         cout << endl;
     }
+    LineTo(hDC, xValues[0], yValues[0]);
+
 }
 
 
