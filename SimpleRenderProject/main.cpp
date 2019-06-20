@@ -14,31 +14,37 @@ void TestPaint(HDC hDC)
 {
 
     const int numPoints = 4;
+    int cameraX = 200;
+    int cameraY = 200;
+    int cameraZ = 200;
 
     struct drawPoint {
         int xValue;
         int yValue;
+        int zValue;
     } allPoints[numPoints];
 
     int xValues[numPoints] = {100, 300, 300, 100};
     int yValues[numPoints] = {100, 100, 300, 300};
+    int zValues[numPoints] = {400, 400, 400, 400};
 
     int i;
     for ( i = 0; i < numPoints; i++) {
-        allPoints[i].xValue = xValues[i];
-        allPoints[i].yValue = yValues[i];
-    }
-
-    MoveToEx(hDC, allPoints[0].xValue, allPoints[0].yValue, NULL);
-    for ( i = 1; i < numPoints; i++) {
-        LineTo(hDC, allPoints[i].xValue, allPoints[i].yValue);
+        allPoints[i].xValue = cameraX+((xValues[i]-cameraX)*cameraZ)/(cameraZ+zValues[i]);
+        allPoints[i].yValue = cameraY+((yValues[i]-cameraY)*cameraZ)/(cameraZ+zValues[i]);
         cout << allPoints[i].xValue;
         cout << endl;
         cout << allPoints[i].yValue;
         cout << endl;
         cout << endl;
     }
-    LineTo(hDC, xValues[0], yValues[0]);
+
+    MoveToEx(hDC, allPoints[0].xValue, allPoints[0].yValue, NULL);
+    for ( i = 1; i < numPoints; i++) {
+        LineTo(hDC, allPoints[i].xValue, allPoints[i].yValue);
+
+    }
+    LineTo(hDC, allPoints[0].xValue, allPoints[0].yValue);
 
 }
 
