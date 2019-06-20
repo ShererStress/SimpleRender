@@ -18,16 +18,26 @@ void TestPaint(HDC hDC)
     int cameraY = 200;
     int cameraZ = 200;
 
+    struct lineNode {
+        int endPoint;
+        lineNode *next;
+    };
+
     struct drawPoint {
         int xValue;
         int yValue;
         int zValue;
+        lineNode firstNode;
     } allPoints[numPoints];
 
+
+    //Abstract this to external file... eventually
     int xValues[numPoints] = {100, 300, 300, 100};
     int yValues[numPoints] = {100, 100, 300, 300};
     int zValues[numPoints] = {400, 400, 400, 400};
+    string linesToDraw[numPoints] = {"1,3","2","",""};
 
+    //Assign values to the drawPoint structs
     int i;
     for ( i = 0; i < numPoints; i++) {
         allPoints[i].xValue = cameraX+((xValues[i]-cameraX)*cameraZ)/(cameraZ+zValues[i]);
@@ -37,8 +47,23 @@ void TestPaint(HDC hDC)
         cout << allPoints[i].yValue;
         cout << endl;
         cout << endl;
+        //Assign lineNodes
+        int j;
+        for(j = 0; j < linesToDraw[i].length(); j++) {
+            int thisNum = -1;
+            char thisChar = linesToDraw[i].at(j);
+            string delimiterChar = ",";
+            if( delimiterChar.at(0) != thisChar) {
+                thisNum = linesToDraw[i].at(j) - "0";
+            }
+
+            cout << "THIS CHAR:";
+            cout << thisChar;
+            cout << endl;
+        }
     }
 
+    //Draw!
     MoveToEx(hDC, allPoints[0].xValue, allPoints[0].yValue, NULL);
     for ( i = 1; i < numPoints; i++) {
         LineTo(hDC, allPoints[i].xValue, allPoints[i].yValue);
