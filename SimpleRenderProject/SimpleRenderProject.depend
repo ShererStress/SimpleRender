@@ -1,5 +1,6 @@
 # depslib dependency file v1.0
-1561013658 source:c:\users\sherer\desktop\project5\simplerender\simplerenderproject\main.cpp
+1561054046 source:c:\users\sherer\desktop\project5\simplerender\simplerenderproject\main.cpp
 	<windows.h>
 	<iostream>
+	<typeinfo>
 

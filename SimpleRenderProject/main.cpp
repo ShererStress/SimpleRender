@@ -6,30 +6,39 @@ using namespace std;
 
 #include <windows.h>
 #include <iostream>
-/*  Windows Procedure Event Handler*/
+#include <typeinfo>
+
 
 
 
 void TestPaint(HDC hDC)
 {
-
+    /*
+    if (__cplusplus == 201703L) std::cout << "C++17\n";
+    else if (__cplusplus == 201402L) std::cout << "C++14\n";
+    else if (__cplusplus == 201103L) std::cout << "C++11\n";
+    else if (__cplusplus == 199711L) std::cout << "C++98\n";
+    else std::cout << "pre-standard C++\n";
+    */
+    cout << "AAAA" << endl;
+    cout << "TEST" << endl;
     const int numPoints = 4;
     int cameraX = 200;
     int cameraY = 200;
     int cameraZ = 200;
-
+    cout << "1" << endl;
     struct lineNode {
         int endPoint;
         lineNode *next;
     };
-
+    cout << "2" << endl;
     struct drawPoint {
         int xValue;
         int yValue;
         int zValue;
         lineNode firstNode;
     } allPoints[numPoints];
-
+    cout << "3" << endl;
 
     //Abstract this to external file... eventually
     int xValues[numPoints] = {100, 300, 300, 100};
@@ -38,6 +47,7 @@ void TestPaint(HDC hDC)
     string linesToDraw[numPoints] = {"1,3","2","",""};
 
     //Assign values to the drawPoint structs
+    cout << "BBBB" << endl;
     int i;
     for ( i = 0; i < numPoints; i++) {
         allPoints[i].xValue = cameraX+((xValues[i]-cameraX)*cameraZ)/(cameraZ+zValues[i]);
@@ -51,17 +61,24 @@ void TestPaint(HDC hDC)
         int j;
         for(j = 0; j < linesToDraw[i].length(); j++) {
             int thisNum = -1;
-            char thisChar = linesToDraw[i].at(j);
+            string thisChar = linesToDraw[i].substr(j,1);
             string delimiterChar = ",";
-            if( delimiterChar.at(0) != thisChar) {
-                thisNum = linesToDraw[i].at(j) - "0";
-            }
 
+
+            /*
+            if(delimiterChar.compare(thisChar) != 0) { //If it is a number
+                string thing = linesToDraw[i].substr(j,1);
+                cout << std::stoi(thing) << endl;
+                //thisNum = linesToDraw[i].substr(j,1).stoi();
+            }
+            */
             cout << "THIS CHAR:";
-            cout << thisChar;
+            cout << thisChar << endl;
             cout << endl;
         }
     }
+
+    cout << "CCCC" << endl;
 
     //Draw!
     MoveToEx(hDC, allPoints[0].xValue, allPoints[0].yValue, NULL);
