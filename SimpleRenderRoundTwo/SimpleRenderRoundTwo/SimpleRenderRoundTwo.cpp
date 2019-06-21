@@ -7,7 +7,7 @@ using namespace std;
 #include <windows.h>
 #include <iostream>
 #include <typeinfo>
-
+#include <vector>
 
 
 
@@ -17,56 +17,81 @@ void TestPaint(HDC hDC)
 	OutputDebugStringA("CCCC \n");
 
 
-	const int numPoints = 4;
+	const int numPoints = 8;
 	int cameraX = 200;
 	int cameraY = 200;
 	int cameraZ = 200;
 
-	struct lineNode {
-		int endPoint;
-		lineNode* next;
-	};
 
 	struct drawPoint {
 		int xValue;
 		int yValue;
 		int zValue;
-		lineNode firstNode;
+		vector<int> endPoints;
 	} allPoints[numPoints];
 
 
-	//Abstract this to external file... eventually
-	int xValues[numPoints] = { 100, 300, 300, 100 };
-	int yValues[numPoints] = { 100, 100, 300, 300 };
-	int zValues[numPoints] = { 400, 400, 400, 400 };
-	string linesToDraw[numPoints] = { "1,3","2","","" };
+	int xValues[numPoints] = { 100, 300, 300, 100, 100, 300, 300, 100 };
+	int yValues[numPoints] = { 100, 100, 300, 300, 100, 100, 300, 300 };
+	int zValues[numPoints] = { 400, 400, 400, 400, 200, 200, 200, 200 };
+	//int linesToDraw = new int[3];
+	//string linesToDraw[numPoints] = { "1,3","2","","" };
 
 	//Assign values to the drawPoint structs
 
 	int i;
+	int j;
 	for (i = 0; i < numPoints; i++) {
 		allPoints[i].xValue = cameraX + ((xValues[i] - cameraX) * cameraZ) / (cameraZ + zValues[i]);
 		allPoints[i].yValue = cameraY + ((yValues[i] - cameraY) * cameraZ) / (cameraZ + zValues[i]);
 		//Assign lineNodes
-		int j;
-		for (j = 0; j < linesToDraw[i].length(); j++) {
-			int thisNum = -1;
-			string thisChar = linesToDraw[i].substr(j, 1);
-			string delimiterChar = ",";
-
-
+		if (i == 0) {
+			allPoints[i].endPoints.resize(3);
+			allPoints[i].endPoints[0] = { 1 };
+			allPoints[i].endPoints[1] = { 3 };
+			allPoints[i].endPoints[2] = { 4 };
+		} else if (i == 1) {
+			allPoints[i].endPoints.resize(2);
+			allPoints[i].endPoints[0] = { 2 };
+			allPoints[i].endPoints[1] = { 5 };
+		} else if (i == 2) {
+			allPoints[i].endPoints.resize(2);
+			allPoints[i].endPoints[0] = { 3 };
+			allPoints[i].endPoints[1] = { 6 };
+		} else if (i == 3) {
+			allPoints[i].endPoints.resize(1);
+			allPoints[i].endPoints[0] = { 7 };
+		} else if (i == 4) {
+			allPoints[i].endPoints.resize(2);
+			allPoints[i].endPoints[0] = { 5 };
+			allPoints[i].endPoints[1] = { 7 };
+		} else if (i == 5) {
+			allPoints[i].endPoints.resize(1);
+			allPoints[i].endPoints[0] = { 6 };
+		} else if (i == 6) {
+			allPoints[i].endPoints.resize(1);
+			allPoints[i].endPoints[0] = { 7 };
+		} else if (i == 7) {
+			allPoints[i].endPoints.resize(0);
 		}
+		
+
 	}
 
 	
 
 	//Draw!
 	MoveToEx(hDC, allPoints[0].xValue, allPoints[0].yValue, NULL);
-	for (i = 1; i < numPoints; i++) {
-		LineTo(hDC, allPoints[i].xValue, allPoints[i].yValue);
+	for (i = 0; i < numPoints; i++) {
+		for (j = 0; j < allPoints[i].endPoints.size(); j++) {
+			MoveToEx(hDC, allPoints[i].xValue, allPoints[i].yValue, NULL);
+			int endPoint = allPoints[i].endPoints[j];
+			LineTo(hDC, allPoints[endPoint].xValue, allPoints[endPoint].yValue);
 
+		}
+		OutputDebugStringA("LOOP");
 	}
-	LineTo(hDC, allPoints[0].xValue, allPoints[0].yValue);
+	//LineTo(hDC, allPoints[0].xValue, allPoints[0].yValue);
 
 }
 
