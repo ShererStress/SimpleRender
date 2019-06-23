@@ -18,11 +18,13 @@ using namespace std;
 //Access types of variables
 #include <typeinfo>
 
+#define IDT_DRAWTIMER 500;
+
 float yDeltaAngle = 0.5;
 
 
 //Function to draw everything in the new window
-void TestPaint(HDC hDC)
+void TestPaint(HDC hDC, HWND hwnd, boolean redraw)
 {
 
 	const int numPoints = 8;
@@ -52,7 +54,7 @@ void TestPaint(HDC hDC)
 	int i;
 	int j;
 	for (i = 0; i < numPoints; i++) {
-		OutputDebugStringA(" \n LOOPA   ");
+		//OutputDebugStringA(" \n LOOPA   ");
 		////Calculate effects of rotation, relative to centerPoint
 		//Get hypotenuse lengths
 		float XZLength = sqrt(pow(xValues[i], 2) + pow(zValues[i], 2));
@@ -65,8 +67,8 @@ void TestPaint(HDC hDC)
 		ostringstream newStringAngle;
 		newStringAngle << yInitAngle;
 		string sAngle(newStringAngle.str());
-		OutputDebugStringA(sAngle.c_str());
-		OutputDebugStringA("  ");
+		//OutputDebugStringA(sAngle.c_str());
+		//OutputDebugStringA("  ");
 
 		//Find x, z values
 		float rotatedX = XZLength * cos(yInitAngle + yDeltaAngle);
@@ -80,7 +82,7 @@ void TestPaint(HDC hDC)
 		ostringstream newStringZ;
 		newStringZ << translatedZ;
 		string sZ(newStringZ.str());
-		OutputDebugStringA(sZ.c_str());
+		//OutputDebugStringA(sZ.c_str());
 
 		////Calculate draw locations based on perspective
 		allPoints[i].xValue = cameraX + ((translatedX - cameraX) * cameraZ) / (cameraZ + translatedZ);
@@ -89,12 +91,12 @@ void TestPaint(HDC hDC)
 		ostringstream newStringX;
 		newStringX << allPoints[i].xValue;
 		string sx(newStringX.str());
-		OutputDebugStringA(sx.c_str());
+		//OutputDebugStringA(sx.c_str());
 
 		ostringstream newStringY;
 		newStringY << allPoints[i].yValue;
 		string sy(newStringY.str());
-		OutputDebugStringA(sy.c_str());
+		//OutputDebugStringA(sy.c_str());
 
 		//Assign lineNodes - do this once
 		if (i == 0) {
@@ -129,7 +131,11 @@ void TestPaint(HDC hDC)
 		
 
 	}
-
+	if (redraw) {
+		//Clear previous drawing
+		RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE);
+	}
+	
 	//Draw!
 	MoveToEx(hDC, allPoints[0].xValue, allPoints[0].yValue, NULL);
 	for (i = 0; i < numPoints; i++) {
@@ -139,9 +145,9 @@ void TestPaint(HDC hDC)
 			LineTo(hDC, allPoints[endPoint].xValue, allPoints[endPoint].yValue);
 
 		}
-		OutputDebugStringA("LOOP");
+		//OutputDebugStringA("LOOP");
 		if (i == 7) {
-			OutputDebugStringA("\n \n");
+			//OutputDebugStringA("\n \n");
 		}
 	}
 
@@ -158,6 +164,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	//Device Context
 	HDC hDC;
 
+
+	
+	//OutputDebugStringA("yDelta increased \n");
 
 	switch (message)
 	{
@@ -177,11 +186,33 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		hDC = BeginPaint(hwnd, &paintStruct);
 
 		//Custom function, from above
-		TestPaint(hDC);
+		TestPaint(hDC, hwnd, false);
 		//Stop painting
 
 		EndPaint(hwnd, &paintStruct);
 		return 0;
+		break;
+
+	case WM_TIMER:
+		OutputDebugStringA("Regular Timer called \n");
+		switch (wParam)
+		{
+		case 500:
+			// process the 10-second timer 
+			yDeltaAngle += 0.01;
+			OutputDebugStringA("Actual timer called \n");
+
+			hDC = BeginPaint(hwnd, &paintStruct);
+
+			//Custom function, from above
+			TestPaint(hDC, hwnd, true);
+			//Stop painting
+
+			EndPaint(hwnd, &paintStruct);
+			return 0;
+		}
+		// process the 10-second timer 
+		
 		break;
 	default:
 		break;
@@ -224,7 +255,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	/*  Class registered, so now create window*/
 	hwnd = CreateWindowEx(NULL,     //extended style
 		L"MyClass",          //class name
-		L"A Real Win App",       //app name
+		L"SimpleRender",       //app name
 		WS_OVERLAPPEDWINDOW |       //window style
 		WS_VISIBLE |
 		WS_SYSMENU,
@@ -234,11 +265,18 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		NULL,               //handle to menu
 		hInstance,          //application instance
 		NULL);              //no extra parameter's
+
 	//  Check if window creation failed
-	
 	if (!hwnd)
 		return 0;
 	done = false; //initialize loop condition variable
+
+	SetTimer(hwnd,             // handle to main window 
+		500,            // timer identifier 
+		1,                 // 1-ms interval(?) 
+		(TIMERPROC)NULL);     // no timer callback 
+
+
 	//  main message loop
 	while (!done)
 	{
@@ -253,7 +291,9 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+		
 	}
+	OutputDebugStringA("Exit msg loop \n");
 	return msg.wParam;
 	
 }

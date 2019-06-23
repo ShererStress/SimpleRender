@@ -1,10 +1,11 @@
 ﻿  SimpleRenderRoundTwo.cpp
-C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\SimpleRenderRoundTwo\SimpleRenderRoundTwo.cpp(63,40): warning C4305:  '+=': truncation from 'double' to 'float'
-C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\SimpleRenderRoundTwo\SimpleRenderRoundTwo.cpp(134,49): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\SimpleRenderRoundTwo\SimpleRenderRoundTwo.cpp(134,28): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\SimpleRenderRoundTwo\SimpleRenderRoundTwo.cpp(136,17): warning C4018:  '<': signed/unsigned mismatch
-C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\SimpleRenderRoundTwo\SimpleRenderRoundTwo.cpp(137,51): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\SimpleRenderRoundTwo\SimpleRenderRoundTwo.cpp(137,30): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\SimpleRenderRoundTwo\SimpleRenderRoundTwo.cpp(139,63): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\SimpleRenderRoundTwo\SimpleRenderRoundTwo.cpp(139,35): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\SimpleRenderRoundTwo\SimpleRenderRoundTwo.cpp(65,40): warning C4305:  '+=': truncation from 'double' to 'float'
+C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\SimpleRenderRoundTwo\SimpleRenderRoundTwo.cpp(140,49): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\SimpleRenderRoundTwo\SimpleRenderRoundTwo.cpp(140,28): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\SimpleRenderRoundTwo\SimpleRenderRoundTwo.cpp(142,17): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\SimpleRenderRoundTwo\SimpleRenderRoundTwo.cpp(143,51): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\SimpleRenderRoundTwo\SimpleRenderRoundTwo.cpp(143,30): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\SimpleRenderRoundTwo\SimpleRenderRoundTwo.cpp(145,63): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\SimpleRenderRoundTwo\SimpleRenderRoundTwo.cpp(145,35): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\SimpleRenderRoundTwo\SimpleRenderRoundTwo.cpp(202,23): warning C4305:  '+=': truncation from 'double' to 'float'
   SimpleRenderRoundTwo.vcxproj -> C:\Users\Sherer\Desktop\Project5\SimpleRender\SimpleRenderRoundTwo\Debug\SimpleRenderRoundTwo.exe
