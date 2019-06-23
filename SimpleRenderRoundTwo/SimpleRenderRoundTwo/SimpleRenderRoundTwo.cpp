@@ -1,39 +1,49 @@
 using namespace std;
-/*  Trim fat from windows*/
-//#define WIN32_LEAN_AND_MEAN
+
+//Hide a console window
 #pragma comment(linker, "/subsystem:windows")
-/*  Pre-processor directives*/
 
+//Utilize windows commands
 #include <windows.h>
+//In/out (printing) functionality
 #include <iostream>
-#include <typeinfo>
+
+//Data structure more similar to js arrays
 #include <vector>
+//Needed for trig functions
+#include <cmath>
+
+//Used for debugging
+#include <sstream>
+//Access types of variables
+#include <typeinfo>
+
+float yDeltaAngle = 0.5;
 
 
-
+//Function to draw everything in the new window
 void TestPaint(HDC hDC)
 {
 
-	OutputDebugStringA("CCCC \n");
-
-
 	const int numPoints = 8;
-	int cameraX = 200;
-	int cameraY = 200;
-	int cameraZ = 200;
+	float cameraX = 200;
+	float cameraY = 200;
+	float cameraZ = 200;
 
+	//float currentAngle = xAngle;
 
 	struct drawPoint {
-		int xValue;
-		int yValue;
-		int zValue;
+		float xValue;
+		float yValue;
+		float zValue;
 		vector<int> endPoints;
 	} allPoints[numPoints];
 
-
-	int xValues[numPoints] = { 100, 300, 300, 100, 100, 300, 300, 100 };
-	int yValues[numPoints] = { 100, 100, 300, 300, 100, 100, 300, 300 };
-	int zValues[numPoints] = { 400, 400, 400, 400, 200, 200, 200, 200 };
+	float centerPoint[3] = { 200, 200, 200 };
+	//All relative to centerPoint
+	float xValues[numPoints] = { 100, -100, -100, 100, -100, 100, 100, -100 };
+	float yValues[numPoints] = { -100, -100, 100, 100, -100, -100, 100, 100 };
+	float zValues[numPoints] = { -100, -100, -100, -100, 100, 100, 100, 100 };
 	//int linesToDraw = new int[3];
 	//string linesToDraw[numPoints] = { "1,3","2","","" };
 
@@ -42,9 +52,51 @@ void TestPaint(HDC hDC)
 	int i;
 	int j;
 	for (i = 0; i < numPoints; i++) {
-		allPoints[i].xValue = cameraX + ((xValues[i] - cameraX) * cameraZ) / (cameraZ + zValues[i]);
-		allPoints[i].yValue = cameraY + ((yValues[i] - cameraY) * cameraZ) / (cameraZ + zValues[i]);
-		//Assign lineNodes
+		OutputDebugStringA(" \n LOOPA   ");
+		////Calculate effects of rotation, relative to centerPoint
+		//Get hypotenuse lengths
+		float XZLength = sqrt(pow(xValues[i], 2) + pow(zValues[i], 2));
+
+		//Find initial angle
+		float yInitAngle = acos(xValues[i] / XZLength);
+		if (zValues[i] < 0) {
+			yInitAngle += 3.14159265358979323846;
+		}
+		ostringstream newStringAngle;
+		newStringAngle << yInitAngle;
+		string sAngle(newStringAngle.str());
+		OutputDebugStringA(sAngle.c_str());
+		OutputDebugStringA("  ");
+
+		//Find x, z values
+		float rotatedX = XZLength * cos(yInitAngle + yDeltaAngle);
+		float rotatedZ = XZLength * sin(yInitAngle + yDeltaAngle);
+
+		////Translate based on centerpoint
+		float translatedX = rotatedX + centerPoint[0];
+		float translatedY = yValues[i] + centerPoint[1];
+		float translatedZ = rotatedZ + centerPoint[2];
+
+		ostringstream newStringZ;
+		newStringZ << translatedZ;
+		string sZ(newStringZ.str());
+		OutputDebugStringA(sZ.c_str());
+
+		////Calculate draw locations based on perspective
+		allPoints[i].xValue = cameraX + ((translatedX - cameraX) * cameraZ) / (cameraZ + translatedZ);
+		allPoints[i].yValue = cameraY + ((translatedY - cameraY) * cameraZ) / (cameraZ + translatedZ);
+
+		ostringstream newStringX;
+		newStringX << allPoints[i].xValue;
+		string sx(newStringX.str());
+		OutputDebugStringA(sx.c_str());
+
+		ostringstream newStringY;
+		newStringY << allPoints[i].yValue;
+		string sy(newStringY.str());
+		OutputDebugStringA(sy.c_str());
+
+		//Assign lineNodes - do this once
 		if (i == 0) {
 			allPoints[i].endPoints.resize(3);
 			allPoints[i].endPoints[0] = { 1 };
@@ -78,8 +130,6 @@ void TestPaint(HDC hDC)
 
 	}
 
-	
-
 	//Draw!
 	MoveToEx(hDC, allPoints[0].xValue, allPoints[0].yValue, NULL);
 	for (i = 0; i < numPoints; i++) {
@@ -90,20 +140,25 @@ void TestPaint(HDC hDC)
 
 		}
 		OutputDebugStringA("LOOP");
+		if (i == 7) {
+			OutputDebugStringA("\n \n");
+		}
 	}
-	//LineTo(hDC, allPoints[0].xValue, allPoints[0].yValue);
 
 }
 
+//The following was (heavily) based on the C++ tutorials from:
+//https://www.cprogramming.com/tutorial/opengl_first_windows_app.html
+//and 
+//http://www.winprog.org/tutorial/simple_window.html
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT paintStruct;
-	/*  Device Context*/
+	//Device Context
 	HDC hDC;
 
 
-	/*  Switch message, condition that is met will execute*/
 	switch (message)
 	{
 		/*  Window is being created*/
@@ -115,11 +170,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		return 0;
 		break;
-		/*  Window needs update*/
+
+		//The important bit - runs this on redraw
 	case WM_PAINT:
+		//Start painting
 		hDC = BeginPaint(hwnd, &paintStruct);
 
+		//Custom function, from above
 		TestPaint(hDC);
+		//Stop painting
+
 		EndPaint(hwnd, &paintStruct);
 		return 0;
 		break;
@@ -131,17 +191,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 
 
-
-
-
-/*  Main function*/
+// 'Main function'
+//This kinds of makes sense, but I'm still not getting most of the intracies
 int APIENTRY WinMain(HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
 	LPSTR     lpCmdLine,
 	int       nCmdShow)
 {
-
-
 
 	WNDCLASSEX  windowClass;        //window class
 	HWND        hwnd;               //window handle
@@ -165,24 +221,25 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	{
 		return 0;
 	}
-	/*  Class registerd, so now create window*/
+	/*  Class registered, so now create window*/
 	hwnd = CreateWindowEx(NULL,     //extended style
 		L"MyClass",          //class name
 		L"A Real Win App",       //app name
 		WS_OVERLAPPEDWINDOW |       //window style
 		WS_VISIBLE |
 		WS_SYSMENU,
-		100, 100,            //x/y coords
-		400, 400,            //width,height
+		250, 250,            //x/y coords of the new window itself on the desktop
+		400, 400,            //width,height of the new window (default - can be resized!)
 		NULL,               //handle to parent
 		NULL,               //handle to menu
 		hInstance,          //application instance
 		NULL);              //no extra parameter's
-	/*  Check if window creation failed*/
+	//  Check if window creation failed
+	
 	if (!hwnd)
 		return 0;
 	done = false; //initialize loop condition variable
-	/*  main message loop*/
+	//  main message loop
 	while (!done)
 	{
 		PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE);
@@ -192,10 +249,11 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		}
 		else
 		{
-			/*  Translate and dispatch to event queue*/
+			//  Translate and dispatch to event queue
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
 	}
 	return msg.wParam;
+	
 }
