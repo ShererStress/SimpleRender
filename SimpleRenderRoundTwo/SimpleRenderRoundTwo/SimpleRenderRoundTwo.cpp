@@ -176,7 +176,7 @@ LRESULT CALLBACK ButtonProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 	return (CallWindowProc(LinkButtonProc, hwnd, message, wParam, lParam));
 }
 
-//The following was (heavily) based on the C++ tutorials from:
+//The following was based on the C++ tutorials from:
 //https://www.cprogramming.com/tutorial/opengl_first_windows_app.html
 //and 
 //http://www.winprog.org/tutorial/simple_window.html
@@ -314,7 +314,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	SetTimer(hwnd,             // handle to main window 
 		500,            // timer identifier 
-		1,                 // 1-ms interval(?) 
+		1,                 // 1-ms interval 
 		(TIMERPROC)NULL);     // no timer callback 
 
 
