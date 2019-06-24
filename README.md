@@ -2,6 +2,10 @@ GA Final Project - SimpleRender
 
 A C++ program that utilizes Win32 API functionality to animate a bouncing and rotating cube. Packaged as an executable file - it will only work on a Windows machine!
 
+Associated repos:
+https://github.com/ShererStress/SimpleRenderFrontend
+https://github.com/ShererStress/SimpleRenderBackend
+
 The program creates a new window where the drawing takes place. A button is also contained in the window.
 After doing an initial drawing of the cube, the window awaits two different types of procedures:
 1. A timer, which causes the cube to redraw every millisecond.
