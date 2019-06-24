@@ -2,6 +2,8 @@ GA Final Project - SimpleRender
 
 A C++ program that utilizes Win32 API functionality to animate a bouncing and rotating cube. Packaged as an executable file - it will only work on a Windows machine!
 
+Accessible at: https://simple-render-frontend-react.herokuapp.com/
+
 Associated repos:
 https://github.com/ShererStress/SimpleRenderFrontend
 https://github.com/ShererStress/SimpleRenderBackend
