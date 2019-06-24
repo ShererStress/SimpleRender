@@ -21,7 +21,11 @@ using namespace std;
 #define IDT_DRAWTIMER 500;
 
 float yDeltaAngle = 0.5;
-
+float yAngularVelocity = 0.01;
+float centerPoint[3] = { 180, 215, 140 };
+int xVel = 1;
+int yVel = 1;
+int zVel = 1;
 
 //Function to draw everything in the new window
 void TestPaint(HDC hDC, HWND hwnd, boolean redraw)
@@ -41,7 +45,7 @@ void TestPaint(HDC hDC, HWND hwnd, boolean redraw)
 		vector<int> endPoints;
 	} allPoints[numPoints];
 
-	float centerPoint[3] = { 200, 200, 200 };
+	
 	//All relative to centerPoint
 	float xValues[numPoints] = { 100, -100, -100, 100, -100, 100, 100, -100 };
 	float yValues[numPoints] = { -100, -100, 100, 100, -100, -100, 100, 100 };
@@ -54,7 +58,6 @@ void TestPaint(HDC hDC, HWND hwnd, boolean redraw)
 	int i;
 	int j;
 	for (i = 0; i < numPoints; i++) {
-		//OutputDebugStringA(" \n LOOPA   ");
 		////Calculate effects of rotation, relative to centerPoint
 		//Get hypotenuse lengths
 		float XZLength = sqrt(pow(xValues[i], 2) + pow(zValues[i], 2));
@@ -64,11 +67,7 @@ void TestPaint(HDC hDC, HWND hwnd, boolean redraw)
 		if (zValues[i] < 0) {
 			yInitAngle += 3.14159265358979323846;
 		}
-		ostringstream newStringAngle;
-		newStringAngle << yInitAngle;
-		string sAngle(newStringAngle.str());
-		//OutputDebugStringA(sAngle.c_str());
-		//OutputDebugStringA("  ");
+
 
 		//Find x, z values
 		float rotatedX = XZLength * cos(yInitAngle + yDeltaAngle);
@@ -79,35 +78,24 @@ void TestPaint(HDC hDC, HWND hwnd, boolean redraw)
 		float translatedY = yValues[i] + centerPoint[1];
 		float translatedZ = rotatedZ + centerPoint[2];
 
-		ostringstream newStringZ;
-		newStringZ << translatedZ;
-		string sZ(newStringZ.str());
-		//OutputDebugStringA(sZ.c_str());
 
 		////Calculate draw locations based on perspective
 		allPoints[i].xValue = cameraX + ((translatedX - cameraX) * cameraZ) / (cameraZ + translatedZ);
 		allPoints[i].yValue = cameraY + ((translatedY - cameraY) * cameraZ) / (cameraZ + translatedZ);
 
-		ostringstream newStringX;
-		newStringX << allPoints[i].xValue;
-		string sx(newStringX.str());
-		//OutputDebugStringA(sx.c_str());
-
-		ostringstream newStringY;
-		newStringY << allPoints[i].yValue;
-		string sy(newStringY.str());
-		//OutputDebugStringA(sy.c_str());
 
 		//Assign lineNodes - do this once
 		if (i == 0) {
-			allPoints[i].endPoints.resize(3);
+			allPoints[i].endPoints.resize(4);
 			allPoints[i].endPoints[0] = { 1 };
-			allPoints[i].endPoints[1] = { 3 };
-			allPoints[i].endPoints[2] = { 4 };
+			allPoints[i].endPoints[1] = { 2 };
+			allPoints[i].endPoints[2] = { 3 };
+			allPoints[i].endPoints[3] = { 4 };
 		} else if (i == 1) {
-			allPoints[i].endPoints.resize(2);
+			allPoints[i].endPoints.resize(3);
 			allPoints[i].endPoints[0] = { 2 };
-			allPoints[i].endPoints[1] = { 5 };
+			allPoints[i].endPoints[1] = { 3 };
+			allPoints[i].endPoints[2] = { 5 };
 		} else if (i == 2) {
 			allPoints[i].endPoints.resize(2);
 			allPoints[i].endPoints[0] = { 3 };
@@ -134,6 +122,20 @@ void TestPaint(HDC hDC, HWND hwnd, boolean redraw)
 	if (redraw) {
 		//Clear previous drawing
 		RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE);
+
+		//Move the box!
+		centerPoint[0] += xVel;
+		centerPoint[1] += yVel;
+		centerPoint[2] += zVel;
+		if (centerPoint[0] > 325 || centerPoint[0] < 80) {
+			xVel = -xVel;
+		}
+		if (centerPoint[1] > 320 || centerPoint[1] < 80) {
+			yVel = -yVel;
+		}
+		if (centerPoint[2] > 450 || centerPoint[2] < 100) {
+			zVel = -zVel;
+		}
 	}
 	
 	//Draw!
@@ -153,11 +155,33 @@ void TestPaint(HDC hDC, HWND hwnd, boolean redraw)
 
 }
 
+
+
+//Used to make the button click do something
+WNDPROC LinkButtonProc;
+
+//Callback for button
+LRESULT CALLBACK ButtonProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	//OutputDebugStringA( message);
+	switch (message)
+	{
+	case WM_LBUTTONDOWN:
+		yAngularVelocity = -yAngularVelocity;
+		return 0;
+		break;
+	}
+
+
+	return (CallWindowProc(LinkButtonProc, hwnd, message, wParam, lParam));
+}
+
 //The following was (heavily) based on the C++ tutorials from:
 //https://www.cprogramming.com/tutorial/opengl_first_windows_app.html
 //and 
 //http://www.winprog.org/tutorial/simple_window.html
 
+//Callback for drawing
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT paintStruct;
@@ -171,9 +195,26 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 		/*  Window is being created*/
-	case WM_CREATE:
+	case WM_CREATE: {
+		HWND hwndButton = CreateWindow(
+			L"BUTTON",
+			L"Change Rotation",      // Button text 
+			WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles 
+			10,         // x position 
+			10,         // y position 
+			120,        // Button width
+			25,        // Button height
+			hwnd,     // Parent window
+			NULL,       // No menu.
+			NULL,		//(HINSTANCE)GetWindowLong(hwnd, GWL_HINSTANCE)
+			NULL);      // Pointer not needed.
+		LinkButtonProc = (WNDPROC)SetWindowLong(hwndButton, GWL_WNDPROC, (LONG)ButtonProc);
+		OutputDebugStringA("New button \n");
+
 		return 0;
 		break;
+	}
+		
 		/*  Window is closing*/
 	case WM_CLOSE:
 		PostQuitMessage(0);
@@ -193,14 +234,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return 0;
 		break;
 
+
+
 	case WM_TIMER:
-		OutputDebugStringA("Regular Timer called \n");
 		switch (wParam)
 		{
 		case 500:
-			// process the 10-second timer 
-			yDeltaAngle += 0.01;
-			OutputDebugStringA("Actual timer called \n");
+			//The timer is called
+			yDeltaAngle += yAngularVelocity;
 
 			hDC = BeginPaint(hwnd, &paintStruct);
 
@@ -211,14 +252,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 			EndPaint(hwnd, &paintStruct);
 			return 0;
 		}
-		// process the 10-second timer 
-		
 		break;
+
 	default:
 		break;
 	}
 	return (DefWindowProc(hwnd, message, wParam, lParam));
 }
+
+
 
 
 
@@ -247,12 +289,10 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	windowClass.lpszMenuName = NULL;
 	windowClass.lpszClassName = L"MyClass";
 	windowClass.hIconSm = LoadIcon(NULL, IDI_WINLOGO);
-	/*  Register window class*/
-	if (!RegisterClassEx(&windowClass))
-	{
-		return 0;
-	}
-	/*  Class registered, so now create window*/
+	//  Register window class
+	RegisterClassEx(&windowClass);
+
+	//Create the window 
 	hwnd = CreateWindowEx(NULL,     //extended style
 		L"MyClass",          //class name
 		L"SimpleRender",       //app name
@@ -265,6 +305,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		NULL,               //handle to menu
 		hInstance,          //application instance
 		NULL);              //no extra parameter's
+
 
 	//  Check if window creation failed
 	if (!hwnd)
@@ -295,5 +336,4 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	}
 	OutputDebugStringA("Exit msg loop \n");
 	return msg.wParam;
-	
 }
